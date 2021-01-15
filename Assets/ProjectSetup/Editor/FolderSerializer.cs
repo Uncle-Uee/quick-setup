@@ -1,14 +1,15 @@
 ﻿#if UNITY_EDITOR
 using System;
 using System.IO;
+using PackageCreator.Serializables;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace JellyFish.Setup
+namespace PackageCreator
 {
-    public static class DirectorySerializer
+    public static class FolderSerializer
     {
         #region MAGIC METHOD
 
@@ -60,7 +61,7 @@ namespace JellyFish.Setup
         /// <summary>
         /// Serialize Folder Layout to a Valid Project Setup Json File.
         /// </summary>
-        [MenuItem("Assets/JellyFish/Setup/Project/Serialize Folders", priority = 10)]
+        [MenuItem("Assets/Folders/Folders To Json", priority = 10)]
         public static void Serialize()
         {
             try
@@ -69,7 +70,7 @@ namespace JellyFish.Setup
                 Object[] objects = Selection.objects;
 
                 string settingsFile = "";
-                DirectoryStructure directoryStructure = new DirectoryStructure();
+                Folders folders = new Folders();
 
                 foreach (Object _object in objects)
                 {
@@ -84,14 +85,14 @@ namespace JellyFish.Setup
 
                     if (Directory.Exists(objectPath))
                     {
-                        if (!directoryStructure.Directories.Contains(objectPath))
+                        if (!folders.Paths.Contains(objectPath))
                         {
-                            directoryStructure.Directories.Add(objectPath);
+                            folders.Paths.Add(objectPath);
                         }
-                        
+
                         // Get All Folders and Subfolders.
                         string[] paths = Directory.GetDirectories(objectPath, "*", SearchOption.AllDirectories);
-                        directoryStructure.Directories.AddRange(paths);
+                        folders.Paths.AddRange(paths);
                     }
                     else
                     {
@@ -99,9 +100,9 @@ namespace JellyFish.Setup
                     }
                 }
 
-                if (directoryStructure.Directories.Count > 0)
+                if (folders.Paths.Count > 0)
                 {
-                    string json = JsonUtility.ToJson(directoryStructure, true);
+                    string json = JsonUtility.ToJson(folders, true);
                     File.WriteAllText(settingsFile, json);
                     AssetDatabase.Refresh();
                 }
@@ -117,53 +118,12 @@ namespace JellyFish.Setup
         }
 
         /// <summary>
-        /// Deserialize Project Setup Settings File to a Valid Project Folder Layout.
-        /// </summary>
-        [MenuItem("Assets/JellyFish//Setup/Project/Deserialize PDJson", priority = 10)]
-        public static void Deserialize()
-        {
-            try
-            {
-                Object _object = Selection.activeObject;
-
-                if (_object)
-                {
-                    string path = AssetDatabase.GetAssetPath(_object);
-
-                    if (Path.GetExtension(path)?.ToLower() == ".pdjson")
-                    {
-                        CreateDirectories(path);
-                    }
-                    else
-                    {
-                        path = EditorUtility.OpenFilePanel("Select PDJson File", Application.dataPath, "pdjson");
-                        CreateDirectories(path);
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
-                Debug.Log(exception.ToString());
-            }
-        }
-
-        /// <summary>
         /// Create Directories from a file at a path.
         /// </summary>
         /// <param name="path"></param>
         private static void CreateDirectories(string path)
         {
-            string json = File.ReadAllText(path);
-            DirectoryStructure directoryStructure = JsonUtility.FromJson<DirectoryStructure>(json);
-
-            directoryStructure.Directories.ForEach(directory =>
-            {
-                if (!Directory.Exists(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                    Debug.Log($"Created Directory: {directory}");
-                }
-            });
+            JsonUtility.FromJson<Folders>(File.ReadAllText(path)).CreateFolders();
             AssetDatabase.Refresh();
         }
 

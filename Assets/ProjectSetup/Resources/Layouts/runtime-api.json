@@ -1,0 +1,10 @@
+{
+  "Paths": [
+    "Addons/",
+    "Plugins/",
+    "Resources/Prefabs/",
+    "Resources/Scenes/Examples/",
+    "Scripts/Editor/",
+    "Scripts/Runtime/"
+  ]
+}
