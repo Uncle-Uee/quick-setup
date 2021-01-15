@@ -1,9 +1,4 @@
-﻿/**
- * Created By: Ubaidullah Effendi-Emjedi
- * LinkedIn : https://www.linkedin.com/in/ubaidullah-effendi-emjedi-202494183/
- */
-
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.IO;
 using UnityEditor;
@@ -11,15 +6,14 @@ using UnityEditor.Callbacks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace JellyFish.Editor.Tools.QuickSetup
+namespace JellyFish.Setup
 {
-    [CanEditMultipleObjects]
-    public static class PDSerializer
+    public static class DirectorySerializer
     {
         #region MAGIC METHOD
 
         /// <summary>
-        /// Deserialize QSJson Dialog Panel Options.
+        /// Deserialize Json Dialog Panel Options.
         /// </summary>
         /// <param name="instanceId"></param>
         /// <param name="line"></param>
@@ -66,7 +60,7 @@ namespace JellyFish.Editor.Tools.QuickSetup
         /// <summary>
         /// Serialize Folder Layout to a Valid Project Setup Json File.
         /// </summary>
-        [MenuItem("Assets/JellyFish/QuickSetup/Project Directory/Serialize Folders", priority = 10)]
+        [MenuItem("Assets/JellyFish/Setup/Project/Serialize Folders", priority = 10)]
         public static void Serialize()
         {
             try
@@ -75,7 +69,7 @@ namespace JellyFish.Editor.Tools.QuickSetup
                 Object[] objects = Selection.objects;
 
                 string settingsFile = "";
-                ProjectDirectories projectDirectories = new ProjectDirectories();
+                DirectoryStructure directoryStructure = new DirectoryStructure();
 
                 foreach (Object _object in objects)
                 {
@@ -90,9 +84,14 @@ namespace JellyFish.Editor.Tools.QuickSetup
 
                     if (Directory.Exists(objectPath))
                     {
+                        if (!directoryStructure.Directories.Contains(objectPath))
+                        {
+                            directoryStructure.Directories.Add(objectPath);
+                        }
+                        
                         // Get All Folders and Subfolders.
                         string[] paths = Directory.GetDirectories(objectPath, "*", SearchOption.AllDirectories);
-                        projectDirectories.Directories.AddRange(paths);
+                        directoryStructure.Directories.AddRange(paths);
                     }
                     else
                     {
@@ -100,9 +99,9 @@ namespace JellyFish.Editor.Tools.QuickSetup
                     }
                 }
 
-                if (projectDirectories.Directories.Count > 0)
+                if (directoryStructure.Directories.Count > 0)
                 {
-                    string json = JsonUtility.ToJson(projectDirectories, true);
+                    string json = JsonUtility.ToJson(directoryStructure, true);
                     File.WriteAllText(settingsFile, json);
                     AssetDatabase.Refresh();
                 }
@@ -120,7 +119,7 @@ namespace JellyFish.Editor.Tools.QuickSetup
         /// <summary>
         /// Deserialize Project Setup Settings File to a Valid Project Folder Layout.
         /// </summary>
-        [MenuItem("Assets/JellyFish/QuickSetup/Project Directory/Deserialize PDJson", priority = 10)]
+        [MenuItem("Assets/JellyFish//Setup/Project/Deserialize PDJson", priority = 10)]
         public static void Deserialize()
         {
             try
@@ -155,9 +154,9 @@ namespace JellyFish.Editor.Tools.QuickSetup
         private static void CreateDirectories(string path)
         {
             string json = File.ReadAllText(path);
-            ProjectDirectories projectDirectories = JsonUtility.FromJson<ProjectDirectories>(json);
+            DirectoryStructure directoryStructure = JsonUtility.FromJson<DirectoryStructure>(json);
 
-            projectDirectories.Directories.ForEach(directory =>
+            directoryStructure.Directories.ForEach(directory =>
             {
                 if (!Directory.Exists(directory))
                 {

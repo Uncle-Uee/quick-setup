@@ -1,13 +1,10 @@
-﻿/**
- * Created By: Ubaidullah Effendi-Emjedi
- * LinkedIn : https://www.linkedin.com/in/ubaidullah-effendi-emjedi-202494183/
- */
-
+﻿using System;
 using System.Collections.Generic;
 
-namespace JellyFish.Editor.Tools.QuickSetup
+namespace JellyFish.Setup
 {
-    internal class ProjectDirectories
+    [Serializable]
+    public class DirectoryStructure
     {
         #region VARIABLES
 

@@ -1,0 +1,14 @@
+{
+    "Directories": [
+        "Assets/_Project",
+        "Assets/_Project\\Resources",
+        "Assets/_Project\\Scripts",
+        "Assets/_Project\\Resources\\Prefabs",
+        "Assets/_Project\\Resources\\Scenes",
+        "Assets/_Project\\Resources\\Scenes\\Examples",
+        "Assets/_Project\\Scripts\\Editor",
+        "Assets/_Project\\Scripts\\Runtime",
+        "Assets/Addons",
+        "Assets/Plugins"
+    ]
+}
