@@ -20,18 +20,18 @@ namespace PackageCreator
         /// <param name="line"></param>
         /// <returns></returns>
         [OnOpenAsset(0)]
-        public static bool DeserializeQSJsonMagicMethod(int instanceId, int line)
+        public static bool JsonMagicMethod(int instanceId, int line)
         {
             Object _object = EditorUtility.InstanceIDToObject(instanceId);
 
             string path = AssetDatabase.GetAssetPath(_object);
 
-            if (Path.GetExtension(path)?.ToLower() == ".pdjson")
+            if (Path.GetExtension(path)?.ToLower() == ".json")
             {
                 // Creates Dialog
                 int doThis = EditorUtility.DisplayDialogComplex("Create Project Directories",
-                                                                "Do you want to create the Projects Directories?",
-                                                                "Create Directories", "Cancel", "Open File");
+                                                                "Is this a valid file?\n[Json File containing Folder Paths]",
+                                                                "Yes, Create Directories", "Cancel", "Open File");
 
                 if (doThis == 0)
                 {
@@ -78,7 +78,7 @@ namespace PackageCreator
                     {
                         settingsFile =
                             EditorUtility.SaveFilePanel("Save Project Directory Structure", Application.dataPath,
-                                                        $"project-directory-structure", "pdjson");
+                                                        $"project-directory-structure", "json");
                     }
 
                     string objectPath = AssetDatabase.GetAssetPath(_object);

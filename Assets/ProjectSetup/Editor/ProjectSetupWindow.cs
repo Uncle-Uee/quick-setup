@@ -60,7 +60,7 @@ namespace PackageCreator
         private void CustomPackageFileField()
         {
             _custom =
-                EditorGUILayout.ObjectField("Custom Layout File:", _custom, typeof(TextAsset), false) as TextAsset;
+                EditorGUILayout.ObjectField("Custom Layout File:", _custom, typeof(Object), false) as TextAsset;
             EditorGUILayout.Space();
         }
 
